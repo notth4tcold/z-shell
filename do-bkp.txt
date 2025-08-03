@@ -1,0 +1,5 @@
+ALWAYS DO BKP OF:
+
+.zsh_history
+.ssh/
+.gitconfig
