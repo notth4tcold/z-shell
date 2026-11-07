@@ -44,3 +44,4 @@ alias pacu='sudo pacman -Syu'
 
 # 🚀 Fastfetch na inicialização
 clear && fastfetch
+export PATH="$HOME/.local/bin:$PATH"

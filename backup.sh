@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail
+
+# Sempre trabalhar na pasta do repositório, de onde quer que o script seja chamado
+cd "$(dirname "$(realpath "$0")")"
 
 # Criar diretório .config se não existir
 mkdir -p .config
