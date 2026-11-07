@@ -12,63 +12,46 @@ Este guia explica como realizar backup e criptografia das suas configurações e
 
 ---
 
-## 💾 Backup Manual
-
-Crie um arquivo tar com as configurações:
-
-```bash
-tar -czf backup_configs.tar.gz ~/.ssh ~/.zsh_history ~/.gitconfig
-```
-
-### Criptografia
-
-Criptografe o backup com GPG:
-
-```bash
-gpg -c backup_configs.tar.gz
-```
-
-- Você será solicitado a inserir uma senha para criptografia.
-- Isso gera o arquivo `backup_configs.tar.gz.gpg`.
-
-### Limpar arquivo original (opcional)
-
-```bash
-rm -rf backup_configs.tar.gz
-```
-
----
-
-## 🔓 Descriptografar e Restaurar
-
-Para recuperar o backup:
-
-```bash
-gpg -d backup_configs.tar.gz.gpg > backup_configs.tar.gz
-tar -xzf backup_configs.tar.gz
-```
-
-- Você precisará da senha usada na criptografia.
-- Isso irá extrair os arquivos originais para o diretório atual.
-
----
-
-## ⚡ Automação com Script
-
-Se você possui o `backup.sh`, basta executá-lo:
+## ⚡ Backup (script)
 
 ```bash
 ./backup.sh
 ```
 
-- O script já cuida de copiar arquivos/pastas, criar o tar e criptografar automaticamente.
-- O arquivo tar original será removido após a criptografia.
+- Sincroniza `.zshrc`, `starship.toml`, `fastfetch/` e `ascii/` para o repo.
+- Empacota `~/.ssh`, `~/.zsh_history` e `~/.gitconfig` e envia **direto** para o GPG
+  (o `.tar.gz` em texto puro nunca é gravado em disco).
+- Pede a senha duas vezes e depois verifica o arquivo gerado (pede a senha de novo).
+  O backup antigo só é substituído se a verificação passar.
+- Criptografia fixada: AES256, S2K SHA512 com contagem máxima de iterações.
+
+## 🔓 Restaurar
+
+```bash
+./restore.sh            # extrai em um diretório temporário novo
+./restore.sh ~/restore  # ou em um destino à sua escolha
+```
+
+O script não sobrescreve nada no `$HOME`; ele mostra o comando para copiar depois de você revisar.
+
+<details>
+<summary>Manual (sem os scripts)</summary>
+
+```bash
+# backup
+tar -czf - -C ~ .ssh .zsh_history .gitconfig | gpg -c --cipher-algo AES256 -o backup_configs.tar.gz.gpg
+# restaurar
+mkdir -p ~/restore && gpg -d backup_configs.tar.gz.gpg | tar -xzf - -C ~/restore
+```
+</details>
+
+> Backups feitos antes desta versão guardam os caminhos absolutos (`home/mei/.ssh/...`),
+> então ao restaurá-los os arquivos aparecem em `<destino>/home/mei/`.
 
 ---
 
 ## 📝 Dicas
 
-- Mantenha seu arquivo `.gpg` em um local seguro.
 - Use senhas fortes e únicas para a criptografia.
 - Faça backups periódicos para evitar perda de dados.
 - Você pode criar backups automáticos usando cron ou systemd timers.

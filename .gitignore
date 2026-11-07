@@ -1,0 +1,4 @@
+# Nunca versionar o backup em texto puro nem arquivos temporários do backup.sh
+backup_configs.tar.gz
+backup_configs.tar
+backup_configs.tar.gz.gpg.*

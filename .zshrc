@@ -1,9 +1,12 @@
 # 🛤️ PATH & Configs
-export PATH="$PATH:/usr/bin:/usr/sbin"
-export JAVA_HOME=$(asdf where java)
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+export PATH="$HOME/.local/bin:${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 export ZSH="$HOME/.oh-my-zsh"
-export STARSHIP_CONFIG="$HOME/.config/starship.toml"
+
+# JAVA_HOME via asdf (sem quebrar o shell se asdf/java não estiverem instalados)
+if (( $+commands[asdf] )) && _java="$(asdf where java 2>/dev/null)"; then
+    export JAVA_HOME="$_java"
+fi
+unset _java
 
 # ⚙️ Oh My Zsh
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
@@ -31,7 +34,7 @@ alias ngrokserver='curl -s http://localhost:4040/api/tunnels | jq ".tunnels[].pu
 
 # Rede e monitoramento
 alias netstat='netstat -tulnp'
-alias myip="curl ifconfig.me"
+alias myip="curl -s https://ifconfig.me; echo"
 
 # Produtividade
 alias reload='source ~/.zshrc'
@@ -43,5 +46,4 @@ alias pacr='sudo pacman -R'
 alias pacu='sudo pacman -Syu'
 
 # 🚀 Fastfetch na inicialização
-clear && fastfetch
-export PATH="$HOME/.local/bin:$PATH"
+(( $+commands[fastfetch] )) && clear && fastfetch
